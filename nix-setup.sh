@@ -4,6 +4,7 @@ set -euo pipefail
 
 # === Prompt user for hostname ===
 read -rp "Enter hostname for this machine: " HOSTNAME
+read -rsp "Enter password for user 'ilcp_admin': " ADMIN_PASSWORD
 
 # === Constants ===
 DISK="/dev/sda"
@@ -67,6 +68,11 @@ echo "ℹ️ NOTE: You will need to set networking.hostName = \"$HOSTNAME\" in y
 echo "📦 Installing NixOS..."
 nixos-install --no-root-passwd
 
+# === Change ilcp_admin Password ===
+echo "🔐 Setting password for ilcp_admin..."
+chroot "$MOUNT_POINT" /bin/bash -c "echo 'ilcp_admin:$ADMIN_PASSWORD' | chpasswd"
+
+# === Done ===
 echo "✅ NixOS installation complete!"
 echo "💡 You can now run 'reboot' and login as $USERNAME (if configured)."
 
