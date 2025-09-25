@@ -8,9 +8,9 @@ read -rsp "Enter password for user 'ilcp_admin': " ADMIN_PASSWORD
 
 # === Constants ===
 DISK="/dev/sda"
-EFI_PART="${DISK}2"
-SWAP_PART="${DISK}3"
-ROOT_PART="${DISK}4"
+EFI_PART="${DISK}1"
+SWAP_PART="${DISK}2"
+ROOT_PART="${DISK}3"
 
 # === Sanity check ===
 if [[ "$EUID" -ne 0 ]]; then
