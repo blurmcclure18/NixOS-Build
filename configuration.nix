@@ -40,6 +40,9 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Enable nix experimental settings
+  nix.settings.experimental-features = ["nix-command" "flakes"]
+
    networking.hostName = "ILCP-LOC-CHK00"; # Define your hostname.
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
