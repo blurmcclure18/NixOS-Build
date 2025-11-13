@@ -2,15 +2,23 @@
 
 set -euo pipefail
 
-# === Prompt user for hostname ===
-read -rp "Enter hostname for this machine: " HOSTNAME
-#read -rsp "Enter password for user 'ilcp_admin': " ADMIN_PASSWORD
-
 # === Constants ===
 DISK="/dev/sda"
 EFI_PART="${DISK}1"
 SWAP_PART="${DISK}2"
 ROOT_PART="${DISK}3"
+
+# === Constants NVME Drive ===
+#DISK="/dev/nvme0n1"
+#EFI_PART="${DISK}p1"
+#SWAP_PART="${DISK}p2"
+#ROOT_PART="${DISK}p3"
+
+# === Constants MMC Flash Drive ===
+#DISK="/dev/mmcblk0"
+#EFI_PART="${DISK}p1"
+#SWAP_PART="${DISK}p2"
+#ROOT_PART="${DISK}p3"
 
 # === Sanity check ===
 if [[ "$EUID" -ne 0 ]]; then
@@ -23,7 +31,7 @@ if ! [ -e "$DISK" ]; then
     exit 1
 fi
 
-echo "⚙️ Installing NixOS on $DISK with hostname '$HOSTNAME'..."
+echo "⚙️ Installing NixOS on $DISK..."
 
 # === Partition the disk ===
 echo "🧹 Partitioning disk..."
@@ -61,20 +69,16 @@ cp ./configuration.nix /mnt/etc/nixos/
 echo "⚙️ Generating hardware-configuration.nix..."
 nixos-generate-config --root /mnt
 
-# === Optional: Patch hostname into config (optional if you're hardcoding it) ===
-echo "ℹ️ NOTE: You will need to set networking.hostName = \"$HOSTNAME\" in your configuration.nix if not already present."
-
 # === Install ===
 echo "📦 Installing NixOS..."
 nixos-install --no-root-passwd
 
 # === Change ilcp_admin Password ===
 echo "🔐 Setting password for ilcp_admin..."
-#chroot "$MOUNT_POINT" /bin/bash -c "echo 'ilcp_admin:$ADMIN_PASSWORD' | chpasswd"
 nixos-enter --root /mnt -c 'passwd ilcp_admin'
 nixos-enter --root /mnt -c 'passwd ilcp_user'
 
 # === Done ===
 echo "✅ NixOS installation complete!"
-echo "💡 You can now run 'reboot' and login as $USERNAME (if configured)."
+echo "💡 You can now run 'reboot'"
 
